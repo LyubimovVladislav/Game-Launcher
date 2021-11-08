@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameLauncher", "GameLauncher\GameLauncher.csproj", "{4816FECC-9B9D-4405-8D78-1739A79C3179}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4816FECC-9B9D-4405-8D78-1739A79C3179}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4816FECC-9B9D-4405-8D78-1739A79C3179}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4816FECC-9B9D-4405-8D78-1739A79C3179}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4816FECC-9B9D-4405-8D78-1739A79C3179}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
