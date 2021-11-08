@@ -1,2 +1,2 @@
 # Game-Launcher
-Test game launcher
+Simple game launcher on .net WinForms
