@@ -45,8 +45,8 @@
 			this.resolutionBox = new System.Windows.Forms.ComboBox();
 			this.playButton = new System.Windows.Forms.Button();
 			this.checkUpdateButton = new System.Windows.Forms.Button();
-			this.label3 = new System.Windows.Forms.Label();
-			this.label4 = new System.Windows.Forms.Label();
+			this.versionLabel = new System.Windows.Forms.Label();
+			this.updateLabel = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
@@ -209,39 +209,40 @@
 			// 
 			// checkUpdateButton
 			// 
-			this.checkUpdateButton.Location = new System.Drawing.Point(314, 280);
+			this.checkUpdateButton.Location = new System.Drawing.Point(306, 279);
 			this.checkUpdateButton.Name = "checkUpdateButton";
-			this.checkUpdateButton.Size = new System.Drawing.Size(113, 30);
+			this.checkUpdateButton.Size = new System.Drawing.Size(121, 31);
 			this.checkUpdateButton.TabIndex = 3;
 			this.checkUpdateButton.Text = "Check for updates";
 			this.checkUpdateButton.UseVisualStyleBackColor = true;
+			this.checkUpdateButton.Click += new System.EventHandler(this.checkUpdateButton_Click);
 			// 
-			// label3
+			// versionLabel
 			// 
-			this.label3.Location = new System.Drawing.Point(287, 341);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(140, 21);
-			this.label3.TabIndex = 4;
-			this.label3.Text = "Game version: x.xx(a)";
-			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+			this.versionLabel.Location = new System.Drawing.Point(287, 341);
+			this.versionLabel.Name = "versionLabel";
+			this.versionLabel.Size = new System.Drawing.Size(140, 21);
+			this.versionLabel.TabIndex = 4;
+			this.versionLabel.Text = "Game version: x.xx(a)";
+			this.versionLabel.TextAlign = System.Drawing.ContentAlignment.BottomRight;
 			// 
-			// label4
+			// updateLabel
 			// 
-			this.label4.ForeColor = System.Drawing.Color.Green;
-			this.label4.Location = new System.Drawing.Point(306, 313);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(121, 28);
-			this.label4.TabIndex = 5;
-			this.label4.Text = "Your game is up to date";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.updateLabel.ForeColor = System.Drawing.Color.Green;
+			this.updateLabel.Location = new System.Drawing.Point(306, 313);
+			this.updateLabel.Name = "updateLabel";
+			this.updateLabel.Size = new System.Drawing.Size(121, 28);
+			this.updateLabel.TabIndex = 5;
+			this.updateLabel.Text = "Your game is up to date";
+			this.updateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(439, 371);
-			this.Controls.Add(this.label4);
-			this.Controls.Add(this.label3);
+			this.Controls.Add(this.updateLabel);
+			this.Controls.Add(this.versionLabel);
 			this.Controls.Add(this.checkUpdateButton);
 			this.Controls.Add(this.playButton);
 			this.Controls.Add(this.groupBox2);
@@ -250,10 +251,13 @@
 			this.MaximizeBox = false;
 			this.Name = "MainForm";
 			this.Text = "Launcher";
+			this.Shown += new System.EventHandler(this.MainForm_Shown);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox2.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+
+		private System.Windows.Forms.Label versionLabel;
 
 		private System.Windows.Forms.Label label5;
 
@@ -262,10 +266,9 @@
 		private System.Windows.Forms.CheckBox fullscreenBox;
 		private System.Windows.Forms.Button playButton;
 		private System.Windows.Forms.Button checkUpdateButton;
-		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.Label updateLabel;
 
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.ComboBox resolutionBox;
 
 		private System.Windows.Forms.Label label1;

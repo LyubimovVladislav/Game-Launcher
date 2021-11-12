@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Net;
 using System.Windows.Forms;
 
 namespace GameLauncher
@@ -8,6 +11,8 @@ namespace GameLauncher
 	public partial class MainForm : Form
 	{
 		private readonly ResourceManager _resources;
+		private readonly GameUpdater _gameUpdater;
+		private bool _isReadyForUpdate;
 
 		private struct Resolution
 		{
@@ -23,7 +28,7 @@ namespace GameLauncher
 				Height = height;
 			}
 
-			public new string ToString()
+			public override string ToString()
 			{
 				return $"{PrefixWidth} {Width} {PrefixHeight} {Height} ";
 			}
@@ -40,6 +45,9 @@ namespace GameLauncher
 			InitializeComponent();
 			_resources = new ResourceManager();
 			_resolutionCommand = new Resolution();
+			_gameUpdater = new GameUpdater(this, _resources);
+			_isReadyForUpdate = false;
+			versionLabel.Text = $@"Version: {_resources.Info.GameVersion}";
 		}
 
 		private void playButton_Click(object sender, EventArgs e)
@@ -120,7 +128,8 @@ namespace GameLauncher
 
 		private void StartProcess()
 		{
-			ProcessStartInfo startInfo = new ProcessStartInfo(_resources.ExePath) {Arguments = CombineArguments()};
+			ProcessStartInfo startInfo = new ProcessStartInfo(_resources.Info.GameExePath)
+				{Arguments = CombineArguments()};
 			Process.Start(startInfo);
 			Close();
 		}
@@ -128,7 +137,46 @@ namespace GameLauncher
 		private string CombineArguments()
 		{
 			return
-				$"{_apiNameCommand}{_resolutionCommand.ToString()}{_fullscreenCommand}{_qualityCommand}{_windowModeCommand}";
+				$"{_apiNameCommand}{_resolutionCommand}{_fullscreenCommand}{_qualityCommand}{_windowModeCommand}";
+		}
+
+		private void checkUpdateButton_Click(object sender, EventArgs eventArgs)
+		{
+			if (!_isReadyForUpdate)
+			{
+				if (!_gameUpdater.CheckForUpdates().Item1)
+				{
+					updateLabel.Text = "Your game is up to date";
+					_gameUpdater.CheckAndUpdate();
+				}
+				else
+				{
+					updateLabel.Text = "Your game is outdated";
+					updateLabel.ForeColor = Color.Red;
+					checkUpdateButton.Text = "Update";
+					_isReadyForUpdate = true;
+				}
+			}
+			else
+			{
+				_gameUpdater.CheckAndUpdate();
+				checkUpdateButton.Enabled = false;
+			}
+		}
+
+		public void ChangeText()
+		{
+			versionLabel.Text = $@"Version: {_resources.Info.GameVersion}";
+			updateLabel.Text = "Your game is up to date";
+			updateLabel.ForeColor = Color.Green;
+			checkUpdateButton.Text = "Check for updates";
+			_isReadyForUpdate = false;
+			checkUpdateButton.Enabled = true;
+		}
+
+		private void MainForm_Shown(object sender, EventArgs e)
+		{
+			checkUpdateButton_Click(null, null);
 		}
 	}
 }
