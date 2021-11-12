@@ -73,7 +73,7 @@ namespace GameLauncher
 				_parent.ChangeText();
 				File.WriteAllText(_gameInfo.GameVersionPath, onlineVersion);
 			} // Relocate all the catches into MainForm? Hadn't find a way to do that
-			catch (InvalidDataException ex)
+			catch (InvalidDataException)
 			{
 				MessageBox.Show("Update server error. Game archive is in wrong format.");
 			}

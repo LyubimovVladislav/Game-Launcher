@@ -146,25 +146,27 @@ namespace GameLauncher
 			{
 				if (!_gameUpdater.CheckForUpdates().Item1)
 				{
-					updateLabel.Text = "Your game is up to date";
-					_gameUpdater.CheckAndUpdate();
+					SetUpdated();
 				}
 				else
 				{
-					updateLabel.Text = "Your game is outdated";
-					updateLabel.ForeColor = Color.Red;
-					checkUpdateButton.Text = "Update";
-					_isReadyForUpdate = true;
+					SetNotUpdated();
 				}
 			}
 			else
 			{
 				_gameUpdater.CheckAndUpdate();
 				checkUpdateButton.Enabled = false;
+				playButton.Enabled = false;
 			}
 		}
 
 		public void ChangeText()
+		{
+			SetUpdated();
+		}
+
+		private void SetUpdated()
 		{
 			versionLabel.Text = $@"Version: {_resources.Info.GameVersion}";
 			updateLabel.Text = "Your game is up to date";
@@ -172,6 +174,15 @@ namespace GameLauncher
 			checkUpdateButton.Text = "Check for updates";
 			_isReadyForUpdate = false;
 			checkUpdateButton.Enabled = true;
+			playButton.Enabled = true;
+		}
+
+		private void SetNotUpdated()
+		{
+			updateLabel.Text = "Your game is outdated";
+			updateLabel.ForeColor = Color.Red;
+			checkUpdateButton.Text = "Update";
+			_isReadyForUpdate = true;
 		}
 
 		private void MainForm_Shown(object sender, EventArgs e)
