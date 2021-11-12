@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.IO.Compression;
+using System.Security.Policy;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GameLauncher
@@ -20,36 +22,36 @@ namespace GameLauncher
 			_rootPath = resourceManager.RootPath;
 		}
 
-		public bool CheckAndUpdate()
+		public async void UpdateIfPresent()
 		{
-			var (flag, onlineVersion) = CheckForUpdates();
-			if (flag)
+			var onlineVersion = await CheckForUpdates();
+			if (onlineVersion != null)
 				DownloadGameFiles(onlineVersion);
-			return flag;
 		}
 
-		public (bool, Version) CheckForUpdates()
+		public async Task<Version> CheckForUpdates()
 		{
 			try
 			{
 				WebClient webClient = new WebClient();
-				Version onlineVersion = new Version(webClient.DownloadString(_gameInfo.VersionLink));
-
-				return (onlineVersion.CompareTo(_gameInfo.GameVersion) == 1, onlineVersion);
+				string versionString = await webClient.DownloadStringTaskAsync(new Uri(_gameInfo.VersionLink));
+				Version onlineVersion = new Version(versionString);
+				return onlineVersion.CompareTo(_gameInfo.GameVersion) == 1 ? onlineVersion : null;
 			}
 			catch (Exception ex) when (ex is ArgumentNullException or WebException or NotSupportedException)
 			{
 				MessageBox.Show(ex.Message);
-				return (false, new Version(0, 0));
+				return null;
 			}
 		}
+
 
 		private void DownloadGameFiles(Version onlineVersion)
 		{
 			try
 			{
 				WebClient webClient = new WebClient();
-				webClient.DownloadFileCompleted += OnDownloadCompleted;
+				webClient.DownloadFileCompleted += OnGameDownloadCompleted;
 				webClient.DownloadFileAsync(new Uri(_gameInfo.GameLink), _gameInfo.GameZipPath, onlineVersion);
 			}
 			catch (Exception ex) when (ex is ArgumentNullException or WebException or InvalidOperationException)
@@ -58,7 +60,7 @@ namespace GameLauncher
 			}
 		}
 
-		private void OnDownloadCompleted(object sender, AsyncCompletedEventArgs args)
+		private void OnGameDownloadCompleted(object sender, AsyncCompletedEventArgs args)
 		{
 			try
 			{

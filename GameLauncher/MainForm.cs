@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
-using System.Net;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GameLauncher
@@ -44,10 +44,10 @@ namespace GameLauncher
 		{
 			InitializeComponent();
 			_resources = new ResourceManager();
-			_resolutionCommand = new Resolution();
+			_resolutionCommand = new Resolution("1920", "1080");
 			_gameUpdater = new GameUpdater(this, _resources);
 			_isReadyForUpdate = false;
-			versionLabel.Text = $@"Version: {_resources.Info.GameVersion}";
+			progressBar1.Visible = false;
 		}
 
 		private void playButton_Click(object sender, EventArgs e)
@@ -102,7 +102,7 @@ namespace GameLauncher
 		private void ParseApiString()
 		{
 			List<RadioButton> list = new List<RadioButton>(
-				new RadioButton[] {automaticApiButton, vulcanApiButton, dx11ApiButton, dx12ApiButton, openglApiButton});
+				new[] {automaticApiButton, vulcanApiButton, dx11ApiButton, dx12ApiButton, openglApiButton});
 			string temp = string.Empty;
 			foreach (var button in list)
 			{
@@ -140,30 +140,45 @@ namespace GameLauncher
 				$"{_apiNameCommand}{_resolutionCommand}{_fullscreenCommand}{_qualityCommand}{_windowModeCommand}";
 		}
 
-		private void checkUpdateButton_Click(object sender, EventArgs eventArgs)
+		private async void checkUpdateButton_Click(object sender, EventArgs eventArgs)
 		{
+			BlockButtons();
 			if (!_isReadyForUpdate)
 			{
-				if (!_gameUpdater.CheckForUpdates().Item1)
+				var version = await _gameUpdater.CheckForUpdates();
+				if (version is null)
 				{
 					SetUpdated();
+					UnBlockButtons();
 				}
 				else
 				{
 					SetNotUpdated();
+					UnBlockButtons();
 				}
 			}
 			else
 			{
-				_gameUpdater.CheckAndUpdate();
-				checkUpdateButton.Enabled = false;
-				playButton.Enabled = false;
+				BlockButtons();
+				await Task.Run(() => _gameUpdater.UpdateIfPresent());
 			}
+		}
+
+		private void BlockButtons()
+		{
+			checkUpdateButton.Enabled = false;
+			playButton.Enabled = false;
+		}
+		private void UnBlockButtons()
+		{
+			checkUpdateButton.Enabled = true;
+			playButton.Enabled = true;
 		}
 
 		public void ChangeText()
 		{
 			SetUpdated();
+			UnBlockButtons();
 		}
 
 		private void SetUpdated()
@@ -173,8 +188,6 @@ namespace GameLauncher
 			updateLabel.ForeColor = Color.Green;
 			checkUpdateButton.Text = "Check for updates";
 			_isReadyForUpdate = false;
-			checkUpdateButton.Enabled = true;
-			playButton.Enabled = true;
 		}
 
 		private void SetNotUpdated()
