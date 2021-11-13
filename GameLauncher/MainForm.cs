@@ -45,7 +45,8 @@ namespace GameLauncher
 			InitializeComponent();
 			_resources = new ResourceManager();
 			_resolutionCommand = new Resolution("1920", "1080");
-			_gameUpdater = new GameUpdater(this, _resources);
+			_gameUpdater = new GameUpdater(_resources);
+			_gameUpdater.DownloadCompleted += ChangeText;
 			_isReadyForUpdate = false;
 			progressBar1.Visible = false;
 		}
@@ -175,7 +176,7 @@ namespace GameLauncher
 			playButton.Enabled = true;
 		}
 
-		public void ChangeText()
+		private void ChangeText(object source, EventArgs e)
 		{
 			SetUpdated();
 			UnBlockButtons();

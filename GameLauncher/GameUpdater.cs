@@ -9,15 +9,15 @@ using System.Windows.Forms;
 
 namespace GameLauncher
 {
+	public delegate void DownloadCompletedHandler(object source, EventArgs e);
 	public class GameUpdater
 	{
 		private readonly ResourceManager.GameInfo _gameInfo;
 		private readonly string _rootPath;
-		private readonly MainForm _parent;
+		public event DownloadCompletedHandler DownloadCompleted;
 
-		public GameUpdater(MainForm parent, ResourceManager resourceManager)
+		public GameUpdater(ResourceManager resourceManager)
 		{
-			_parent = parent;
 			_gameInfo = resourceManager.Info;
 			_rootPath = resourceManager.RootPath;
 		}
@@ -72,7 +72,7 @@ namespace GameLauncher
 
 				File.Delete(_gameInfo.GameZipPath);
 				_gameInfo.GameVersion = new Version(onlineVersion);
-				_parent.ChangeText();
+				DownloadCompleted?.Invoke(this,EventArgs.Empty);
 				File.WriteAllText(_gameInfo.GameVersionPath, onlineVersion);
 			} // Relocate all the catches into MainForm? Hadn't find a way to do that
 			catch (InvalidDataException)
