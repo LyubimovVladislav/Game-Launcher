@@ -47,6 +47,7 @@
 			this.checkUpdateButton = new System.Windows.Forms.Button();
 			this.versionLabel = new System.Windows.Forms.Label();
 			this.updateLabel = new System.Windows.Forms.Label();
+			this.progressBar1 = new System.Windows.Forms.ProgressBar();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
@@ -199,7 +200,7 @@
 			// playButton
 			// 
 			this.playButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.25F);
-			this.playButton.Location = new System.Drawing.Point(130, 325);
+			this.playButton.Location = new System.Drawing.Point(284, 322);
 			this.playButton.Name = "playButton";
 			this.playButton.Size = new System.Drawing.Size(143, 37);
 			this.playButton.TabIndex = 2;
@@ -209,7 +210,7 @@
 			// 
 			// checkUpdateButton
 			// 
-			this.checkUpdateButton.Location = new System.Drawing.Point(306, 279);
+			this.checkUpdateButton.Location = new System.Drawing.Point(157, 205);
 			this.checkUpdateButton.Name = "checkUpdateButton";
 			this.checkUpdateButton.Size = new System.Drawing.Size(121, 31);
 			this.checkUpdateButton.TabIndex = 3;
@@ -219,28 +220,36 @@
 			// 
 			// versionLabel
 			// 
-			this.versionLabel.Location = new System.Drawing.Point(287, 341);
+			this.versionLabel.Location = new System.Drawing.Point(12, 339);
 			this.versionLabel.Name = "versionLabel";
-			this.versionLabel.Size = new System.Drawing.Size(140, 21);
+			this.versionLabel.Size = new System.Drawing.Size(84, 23);
 			this.versionLabel.TabIndex = 4;
-			this.versionLabel.Text = "Game version: x.xx(a)";
-			this.versionLabel.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+			this.versionLabel.Text = "Version: 0.0";
+			this.versionLabel.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// updateLabel
 			// 
 			this.updateLabel.ForeColor = System.Drawing.Color.Green;
-			this.updateLabel.Location = new System.Drawing.Point(306, 313);
+			this.updateLabel.Location = new System.Drawing.Point(132, 334);
 			this.updateLabel.Name = "updateLabel";
 			this.updateLabel.Size = new System.Drawing.Size(121, 28);
 			this.updateLabel.TabIndex = 5;
 			this.updateLabel.Text = "Your game is up to date";
-			this.updateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.updateLabel.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+			// 
+			// progressBar1
+			// 
+			this.progressBar1.Location = new System.Drawing.Point(16, 242);
+			this.progressBar1.Name = "progressBar1";
+			this.progressBar1.Size = new System.Drawing.Size(403, 10);
+			this.progressBar1.TabIndex = 6;
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(439, 371);
+			this.Controls.Add(this.progressBar1);
 			this.Controls.Add(this.updateLabel);
 			this.Controls.Add(this.versionLabel);
 			this.Controls.Add(this.checkUpdateButton);
@@ -256,6 +265,8 @@
 			this.groupBox2.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+
+		private System.Windows.Forms.ProgressBar progressBar1;
 
 		private System.Windows.Forms.Label versionLabel;
 

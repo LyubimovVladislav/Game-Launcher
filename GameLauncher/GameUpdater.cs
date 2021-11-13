@@ -3,18 +3,22 @@ using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.IO.Compression;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace GameLauncher
 {
 	public delegate void DownloadCompletedHandler(object source, EventArgs e);
+	public delegate void DownloadProgressChangedHandler(object source, DownloadProgressChangedEventArgs e);
 	public class GameUpdater
 	{
+		public event DownloadCompletedHandler DownloadCompleted;
+		public event DownloadProgressChangedHandler DownloadProgressChanged;
+
+
 		private readonly ResourceManager.GameInfo _gameInfo;
 		private readonly string _rootPath;
-		public event DownloadCompletedHandler DownloadCompleted;
 
 		public GameUpdater(ResourceManager resourceManager)
 		{
@@ -28,12 +32,13 @@ namespace GameLauncher
 			if (onlineVersion != null)
 				DownloadGameFiles(onlineVersion);
 		}
-
+		
 		public async Task<Version> CheckForUpdates()
 		{
 			try
 			{
 				WebClient webClient = new WebClient();
+				webClient.DownloadProgressChanged += OnProgressChanged;
 				string versionString = await webClient.DownloadStringTaskAsync(new Uri(_gameInfo.VersionLink));
 				Version onlineVersion = new Version(versionString);
 				return onlineVersion.CompareTo(_gameInfo.GameVersion) == 1 ? onlineVersion : null;
@@ -44,13 +49,14 @@ namespace GameLauncher
 				return null;
 			}
 		}
-
+		
 
 		private void DownloadGameFiles(Version onlineVersion)
 		{
 			try
 			{
 				WebClient webClient = new WebClient();
+				webClient.DownloadProgressChanged += OnProgressChanged;
 				webClient.DownloadFileCompleted += OnGameDownloadCompleted;
 				webClient.DownloadFileAsync(new Uri(_gameInfo.GameLink), _gameInfo.GameZipPath, onlineVersion);
 			}
@@ -74,11 +80,17 @@ namespace GameLauncher
 				_gameInfo.GameVersion = new Version(onlineVersion);
 				DownloadCompleted?.Invoke(this,EventArgs.Empty);
 				File.WriteAllText(_gameInfo.GameVersionPath, onlineVersion);
-			} // Relocate all the catches into MainForm? Hadn't find a way to do that
+			} // Relocate all the catches into MainForm? Couldn't find a way to do that
 			catch (InvalidDataException)
 			{
 				MessageBox.Show("Update server error. Game archive is in wrong format.");
 			}
 		}
+		private void OnProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+		{
+			
+			DownloadProgressChanged?.Invoke(sender,e);
+		}
+
 	}
 }

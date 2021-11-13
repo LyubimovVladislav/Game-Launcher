@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -46,9 +48,9 @@ namespace GameLauncher
 			_resources = new ResourceManager();
 			_resolutionCommand = new Resolution("1920", "1080");
 			_gameUpdater = new GameUpdater(_resources);
-			_gameUpdater.DownloadCompleted += ChangeText;
+			_gameUpdater.DownloadCompleted += OnUpdateIfPresentComplete;
+			_gameUpdater.DownloadProgressChanged += ChangeProgressValue;
 			_isReadyForUpdate = false;
-			progressBar1.Visible = false;
 		}
 
 		private void playButton_Click(object sender, EventArgs e)
@@ -144,24 +146,22 @@ namespace GameLauncher
 		private async void checkUpdateButton_Click(object sender, EventArgs eventArgs)
 		{
 			BlockButtons();
+			SetupProgressBar();
 			if (!_isReadyForUpdate)
 			{
 				var version = await _gameUpdater.CheckForUpdates();
 				if (version is null)
-				{
 					SetUpdated();
-					UnBlockButtons();
-				}
 				else
-				{
 					SetNotUpdated();
-					UnBlockButtons();
-				}
+				UnBlockButtonsAndHideBarAfter(1f);
 			}
 			else
 			{
 				BlockButtons();
-				await Task.Run(() => _gameUpdater.UpdateIfPresent());
+				_gameUpdater.UpdateIfPresent();
+				// Async method
+				// When task completes, an event evokes OnUpdateIfPresentComplete
 			}
 		}
 
@@ -170,16 +170,17 @@ namespace GameLauncher
 			checkUpdateButton.Enabled = false;
 			playButton.Enabled = false;
 		}
+
 		private void UnBlockButtons()
 		{
 			checkUpdateButton.Enabled = true;
 			playButton.Enabled = true;
 		}
 
-		private void ChangeText(object source, EventArgs e)
+		private void OnUpdateIfPresentComplete(object source, EventArgs e)
 		{
 			SetUpdated();
-			UnBlockButtons();
+			UnBlockButtonsAndHideBarAfter(1f);
 		}
 
 		private void SetUpdated()
@@ -202,6 +203,27 @@ namespace GameLauncher
 		private void MainForm_Shown(object sender, EventArgs e)
 		{
 			checkUpdateButton_Click(null, null);
+		}
+
+		private void ChangeProgressValue(object source, DownloadProgressChangedEventArgs e)
+		{
+			progressBar1.Value = e.ProgressPercentage;
+		}
+
+		private void SetupProgressBar()
+		{
+			progressBar1.Value = 0;
+			progressBar1.Visible = true;
+		}
+
+		private async void UnBlockButtonsAndHideBarAfter(float seconds)
+		{
+			await Task.Run(() =>
+			{
+				Task.Delay((int) (seconds * 1000)).Wait();
+				progressBar1.Visible = false;
+			});
+			UnBlockButtons();
 		}
 	}
 }
