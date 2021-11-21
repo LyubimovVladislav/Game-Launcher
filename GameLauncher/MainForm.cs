@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -218,11 +216,8 @@ namespace GameLauncher
 
 		private async void UnBlockButtonsAndHideBarAfter(float seconds)
 		{
-			await Task.Run(() =>
-			{
-				Task.Delay((int) (seconds * 1000)).Wait();
-				progressBar1.Visible = false;
-			});
+			await Task.Delay(1000);
+			progressBar1.Visible = false;
 			UnBlockButtons();
 		}
 	}
