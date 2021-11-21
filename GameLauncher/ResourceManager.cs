@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Data;
-using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
 
 namespace GameLauncher
 {
@@ -49,8 +50,23 @@ namespace GameLauncher
 			HasCorrectGamePath = gameFileName != null;
 			var gameExePath = Path.Combine(RootPath, gameFileName ?? string.Empty);
 			var gameZipPath = Path.Combine(RootPath, "GamePackage");
-			var gameLink = GetGameLink();
-			var versionLink = GetVersionLink();
+			string gameLink, versionLink;
+			try
+			{
+				gameLink = GetGameLink();
+				versionLink = GetVersionLink();
+			}
+			catch (WebException e)
+			{
+				Task.Run(async () =>
+				{
+					await Task.Delay(1000);
+					return MessageBox.Show($@"{e.Message}");
+				});
+				gameLink = null;
+				versionLink = null;
+			}
+
 			var gameVersion = ReadGameVersion(gameVersionPath);
 			Info = new GameInfo(gameZipPath, gameVersionPath, gameExePath, gameLink, versionLink,
 				gameFileName, gameVersion);
@@ -58,18 +74,27 @@ namespace GameLauncher
 
 		private Version ReadGameVersion(string gameVersionPath)
 		{
-			return File.Exists(gameVersionPath) ? 
-				new Version(File.ReadAllText(gameVersionPath)) : new Version(0, 0);
+			return File.Exists(gameVersionPath) ? new Version(File.ReadAllText(gameVersionPath)) : new Version(0, 0);
 		}
 
 		private static string GetVersionLink()
 		{
-			return "https://drive.google.com/uc?export=download&id=1_kepCiUOhnzD9MUOklCPk7Crxw5hCLrU";
+			var url = new Uri("https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=" +
+			                  WebUtility.UrlEncode("https://disk.yandex.ru/d/jMnHiBK-scdCbw"));
+
+			using WebClient webClient = new WebClient();
+			var result = webClient.DownloadString(url).Split('"');
+			return result[3];
 		}
 
 		private static string GetGameLink()
 		{
-			return "https://drive.google.com/uc?export=download&id=1w-fDi9--5NWRr4uYE4L8R28iiPO1jWQ7";
+			var url = new Uri("https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=" +
+			                  WebUtility.UrlEncode("https://disk.yandex.ru/d/pF2MwO9dAL5fTA"));
+
+			using WebClient webClient = new WebClient();
+			var result = webClient.DownloadString(url).Split('"');
+			return result[3];
 		}
 
 		private string AssignExeFile()
